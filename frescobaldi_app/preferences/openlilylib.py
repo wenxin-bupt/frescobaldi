@@ -57,9 +57,22 @@ class OpenLilyLibPrefs(preferences.ScrolledGroupsPage):
         
         layout.setAlignment(Qt.AlignTop)
 
-        layout.addWidget(OllRoot(self))
-        layout.addWidget(Packages(self))
-        layout.addWidget(Config(self))
+        self.subs = {
+            'oll_root': OllRoot(self), 
+            'packages': Packages(self), 
+            'config': Config(self)
+        }
+        layout.addWidget(self.subs['oll_root'])
+        layout.addWidget(self.subs['packages'])
+        layout.addWidget(self.subs['config'])
+        
+        self.changed.connect(self.updatePage)
+        
+    def updatePage(self):
+        oll_root = self.subs['oll_root'].directory.path()
+        for s in self.subs:
+            if not s == 'oll_root':
+                self.subs[s].setEnabled(True if oll_root else False)
 
 
 class OllRoot(preferences.Group):
@@ -72,7 +85,7 @@ class OllRoot(preferences.Group):
         
         self.label = QLabel()
         self.directory = widgets.urlrequester.UrlRequester()
-        self.directory.changed.connect(self.changedRoot)
+        self.directory.changed.connect(page.changed)
         # TODO: Check installation upon change
         
         layout.addWidget(self.label, 0, 0)
@@ -89,9 +102,11 @@ class OllRoot(preferences.Group):
 
     def loadSettings(self):
         s = settings()
+        self.directory.setPath(s.value("oll-root", "", str))
 
     def saveSettings(self):
         s = settings()
+        s.setValue('oll-root', self.directory.path())
     
     def changedRoot(self):
         pass
@@ -104,7 +119,7 @@ class Packages(preferences.Group):
 
         layout = QVBoxLayout()
         self.setLayout(layout)
-
+        
         self.instances = PackageList(self)
         self.instances.changed.connect(self.changed)
         layout.addWidget(self.instances)
