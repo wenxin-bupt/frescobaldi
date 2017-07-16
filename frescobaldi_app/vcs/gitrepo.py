@@ -52,7 +52,7 @@ class Repo(abstractrepo.Repo):
         self._tracked_remotes = {}
         self._update_all_attributes(blocking=True)
 
-    def _update_branches(self, blocking=False):
+    def _update_branches(self,  blocking=False):
         """
         Updates self._branches and self._current_branch. Then you can access
         them through branches(), current_branch()
