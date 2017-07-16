@@ -37,7 +37,7 @@ class Repo(abstractrepo.Repo):
     """
     Manage a git repository, be it
     the running Frescobaldi application
-    or a document's project.
+    or a doc  ument's project.
     """
 
     _git_available = None
